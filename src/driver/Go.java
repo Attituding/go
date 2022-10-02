@@ -103,8 +103,8 @@ public class Go {
     
     /*
     Find a group of the same player in the north, east, south, and west directions
-    Design Requirements:
-        - Don't crash when a circle is encountered
+    Requirements:
+        - Don't crash/infinitely loop when a circle is encountered
         - Minimize checking for duplicates for speed
     This approach recursively searches immediate neightbors and avoids searching previously searched values
     This method could be more efficient with a different approach, but this sufficies and is fast enough
@@ -115,9 +115,9 @@ public class Go {
         
         chain.add(new Point(column, row));
         
-        int player = getStone(row, column);
+        int targetPlayer = getStone(row, column);
         
-        getChain(chain, row, column, player);
+        getChain(chain, row, column, targetPlayer);
         
         return chain;
     }

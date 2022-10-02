@@ -37,6 +37,13 @@ public class Driver {
             for (int y = 0; y < size; y++) {
                 int rawValue = game.getStone(i, y);
                 
+                switch (rawValue) {
+                    case Go.EMPTY -> rowString += padString("·", paddingLength);
+                    case Go.BLACK -> rowString += padString("B", paddingLength);
+                    case Go.WHITE -> rowString += padString("W", paddingLength);
+                }
+                
+                /*
                 if (rawValue == Go.EMPTY) {
                     rowString += padString("·", paddingLength);
                 } else if (rawValue == Go.BLACK) {
@@ -44,6 +51,7 @@ public class Driver {
                 } else if (rawValue == Go.WHITE) {
                     rowString += padString("W", paddingLength);
                 }
+                */
             }
             
             System.out.println(rowString);
@@ -51,7 +59,7 @@ public class Driver {
     }
     
     public static void main(String[] args) {
-        Go game = new Go(20);
+        Go game = new Go(19);
         
         Scanner input = new Scanner(System.in);
         
