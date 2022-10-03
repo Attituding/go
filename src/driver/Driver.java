@@ -63,15 +63,9 @@ public class Driver {
             
             System.out.println("Do you want to skip your turn?");
             
-            boolean pass = false;
+            String line = input.next();
             
-            try {
-                pass = input.nextBoolean();
-            } catch (Exception e) {
-                System.out.println("Invalid turn, continuing turn!");
-            }
-            
-            if (pass) {
+            if (line.contains("y") || line.contains("true")) {
                 System.out.println("Skipping turn!");
                 game.pass();
                 continue;

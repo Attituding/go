@@ -45,8 +45,8 @@ public class Go {
         setStone(row, column, player);
         
         // Capturing other player takes priority
-        capture(row, column, player);
         capture(row, column, getOtherPlayer(player));
+        capture(row, column, player);
         
         lastPlayerPassed = false;
         move += 1;
