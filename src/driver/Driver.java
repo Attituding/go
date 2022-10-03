@@ -54,7 +54,7 @@ public class Driver {
     }
     
     public static void main(String[] args) {
-        Go game = new Go(19);
+        Go game = new Go(20);
         
         Scanner input = new Scanner(System.in);
         
@@ -62,7 +62,14 @@ public class Driver {
             print(game);
             
             System.out.println("Do you want to skip your turn?");
-            Boolean pass = input.nextBoolean();
+            
+            boolean pass = false;
+            
+            try {
+                pass = input.nextBoolean();
+            } catch (Exception e) {
+                System.out.println("Invalid turn, continuing turn!");
+            }
             
             if (pass) {
                 System.out.println("Skipping turn!");

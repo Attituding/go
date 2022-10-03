@@ -81,11 +81,13 @@ public class Go {
     
     // Remove a neighboring chain if it has no liberty
     private void capture(int row, int column, int player) {
-        ArrayList<Point> neighbors = getNeighbors(row, column);
+        ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
         
-        for (Point neighbor : neighbors) {
-            if (getStone(neighbor.y, neighbor.x) == player) {
-                ArrayList<Point> chain = getChain(neighbor.y, neighbor.x);
+        stonesOfInterest.add(new Point(column, row));
+        
+        for (Point stoneOfInterest : stonesOfInterest) {
+            if (getStone(stoneOfInterest.y, stoneOfInterest.x) == player) {
+                ArrayList<Point> chain = getChain(stoneOfInterest.y, stoneOfInterest.x);
             
                 if (isChainLiberal(chain) == false) {
                     for (Point point : chain) {
