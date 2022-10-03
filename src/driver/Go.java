@@ -21,10 +21,10 @@ public class Go {
     public Go(int size) {
         board = new int[size][size];
         this.size = size;
-
-        for (int i = 0; i < board.length; i++) {
-            for (int y = 0; y < board[0].length; y++) {
-                board[i][y] = EMPTY;
+        
+        for (int row = 0; row < board.length; row++) {
+            for (int column = 0; column < board[0].length; column++) {
+                setStone(row, column, EMPTY);
             }
         }
     }
@@ -104,9 +104,10 @@ public class Go {
     This approach recursively searches immediate neighbors and avoids searching previously searched values
     This method could be more efficient with a different approach, but this suffices and is fast enough
         - To improve speed, don't include checked indexes as neighbors
+        - Track the angle that a givern getChain call has differed from the origin
     */
     private ArrayList<Point> getChain(int row, int column) {
-        ArrayList<Point> chain = new ArrayList<Point>();
+        ArrayList<Point> chain = new ArrayList();
         
         chain.add(new Point(column, row));
         
@@ -129,7 +130,7 @@ public class Go {
     }
     
     private ArrayList<Point> getNeighbors(int row, int column) {
-        ArrayList<Point> neighbors = new ArrayList<Point>();
+        ArrayList<Point> neighbors = new ArrayList();
         
         if (isInBounds(row - 1, column)) { // North
             neighbors.add(new Point(column, row - 1));
