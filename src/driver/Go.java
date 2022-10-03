@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
-
 package driver;
 
 import java.util.ArrayList;
@@ -26,10 +21,10 @@ public class Go {
     public Go(int size) {
         board = new int[size][size];
         this.size = size;
-        
-        for (int row[] : board) {
-            for (int value : row) {
-                value = EMPTY;
+
+        for (int i = 0; i < board.length; i++) {
+            for (int y = 0; y < board[0].length; y++) {
+                board[i][y] = EMPTY;
             }
         }
     }
@@ -106,12 +101,12 @@ public class Go {
     Requirements:
         - Don't crash/infinitely loop when a circle is encountered
         - Minimize checking for duplicates for speed
-    This approach recursively searches immediate neightbors and avoids searching previously searched values
-    This method could be more efficient with a different approach, but this sufficies and is fast enough
+    This approach recursively searches immediate neighbors and avoids searching previously searched values
+    This method could be more efficient with a different approach, but this suffices and is fast enough
         - To improve speed, don't include checked indexes as neighbors
     */
     private ArrayList<Point> getChain(int row, int column) {
-        ArrayList<Point> chain = new ArrayList();
+        ArrayList<Point> chain = new ArrayList<Point>();
         
         chain.add(new Point(column, row));
         
@@ -134,7 +129,7 @@ public class Go {
     }
     
     private ArrayList<Point> getNeighbors(int row, int column) {
-        ArrayList<Point> neighbors = new ArrayList();
+        ArrayList<Point> neighbors = new ArrayList<Point>();
         
         if (isInBounds(row - 1, column)) { // North
             neighbors.add(new Point(column, row - 1));

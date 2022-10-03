@@ -1,8 +1,3 @@
-/*  
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package driver;
 
 import java.util.Scanner;
@@ -105,6 +100,8 @@ public class Driver {
             
             game.play(row, column);
         }
+
+        input.close();
         
         System.out.println("Both players skipped! Game over!");
     }
