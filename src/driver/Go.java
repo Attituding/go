@@ -14,10 +14,10 @@ public class Go {
     private boolean lastPlayerPassed = false;
     private boolean gameEnded = false;
     private int move = 1;
-    private int player = BLACK;
+    private int currentPlayer = BLACK;
     
     
-    // options: int size, boolean self capture/suicide
+    // P2 TODO: Options: int size, boolean self capture/suicide
     public Go(int size /*, boolean allowSelfCapture*/) {
         board = new int[size][size];
         this.size = size;
@@ -38,24 +38,24 @@ public class Go {
         
         lastPlayerPassed = true;
         move += 1;
-        player = getOtherPlayer(player);
+        currentPlayer = getOtherPlayer(currentPlayer);
     }
     
     public void play(int row, int column) {
-        setValue(row, column, player);
+        setValue(row, column, currentPlayer);
         
-        // Capturing other player takes priority
-        capture(row, column, getOtherPlayer(player));
-        capture(row, column, player);
+        // Capturing opponent takes priority
+        capture(row, column, getOtherPlayer(currentPlayer));
+        capture(row, column, currentPlayer);
         
         lastPlayerPassed = false;
         move += 1;
-        player = getOtherPlayer(player);
+        currentPlayer = getOtherPlayer(currentPlayer);
     }
     
     public boolean canPlay(int row, int column) {
-        // TODO: Check that a value was never occcupied by the same player (ko rule)
-        // TODO: Check for infinite looping behavior
+        // P3 TODO: Check that a value was never occcupied by the same player (ko rule)
+        // P3 TODO: Check for infinite looping behavior
 
         if (isInBounds(row, column) == false) {
             return false;
@@ -65,7 +65,7 @@ public class Go {
             return false;
         }
         
-        // Optional self-capture rule
+        // P2 TODO: Optional self-capture rule
         // A move is illegal if only one's stones are removed after a play
         // Basic implementation:
         // Get neighboring chains (getNeighborChains) including self
@@ -91,14 +91,10 @@ public class Go {
     }
     
     /*
-    Find a group of the same player in the north, east, south, and west directions
-    Requirements:
-        - Don't crash/infinitely loop when a circle is encountered
-        - Minimize checking for duplicates for speed
+    Finds directly adjacent clusters of the same color
     This approach recursively searches immediate neighbors and avoids searching previously searched values
-    This method could be more efficient with a different approach, but this suffices and is fast enough
         - To improve speed, don't include checked indexes as neighbors
-        - Track the angle that a givern getChain call has differed from the origin
+        - Track the angle that a given getChain call has differed from the origin
     */
     private ArrayList<Point> getChain(int row, int column) {
         ArrayList<Point> chain = new ArrayList();
@@ -146,12 +142,14 @@ public class Go {
     }
     
     private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player) {
-        // TODO: check that chains are not duplicated
+        // P3 TODO: check that chains are not duplicated
         
         ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
         ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
         
-        stonesOfInterest.add(new Point(column, row));
+        if (player == this.currentPlayer) {
+            stonesOfInterest.add(new Point(column, row));
+        }
         
         for (Point stoneOfInterest : stonesOfInterest) {
             if (getValue(stoneOfInterest.y, stoneOfInterest.x) == player) {
@@ -164,7 +162,7 @@ public class Go {
     }
     
     public int getPlayer() {
-        return player;
+        return currentPlayer;
     }
     
     public boolean getGameEnded() {
@@ -184,8 +182,9 @@ public class Go {
     }
     
     /*
+    // P2 TODO
+    // Territory scoring counts a player's territory minus the stones captured byt he opponent
     public int getScoreTerritoy(int player) {
-        // Wikipedia: In territory scoring a player's score is determined by the number of empty locations that player has surrounded minus the number of stones their opponent has captured
         // loop over every empty space
         // if a space is surrounded by "player", add point to that player
         // if a space is surrounded by multiple players, no points are given
@@ -193,14 +192,38 @@ public class Go {
     }
     */
     
-    /*
+    // Area scoring counts a player's territoty plus the number of stone they have
     public int getScoreArea(int player) {
-        // Wikipedia: In area scoring (including Chinese rules), a player's score is determined by the number of stones that player has on the board plus the empty area surrounded by that player's stones. 
-        // loop over every empty space (also track the amount fo stone that "player" has)
-        // if a space is surrounded by "player", add point to that player
-        // if a space is surrounded by multiple players, no points are given
+        ArrayList<Point> checkedPoints = new ArrayList();
+        int score = 0;
+        int stones = 0;
+        
+        // Track territory and player stones
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[0].length; x++) {
+                int value = getValue(y, x);
+                
+                if (value == EMPTY) {
+                    if (checkedPoints.contains(new Point(y, x))) {
+                        continue;
+                    }
+                    
+                    ArrayList<Point> chain = getChain(y, x);
+                    checkedPoints.addAll(chain);
+                    
+                    // If a space is surrounded by "player", add a point to that player
+                    // If a space is surrounded by multiple players, no point is given
+                    if (isChainPlayerTerritoy(chain, player)) {
+                        score += chain.size();
+                    }
+                } else if (value == player) {
+                    stones++;
+                }
+            }
+        }
+        
+        return stones + score;
     }
-    */
     
     public int getSize() {
         return size;
@@ -218,6 +241,24 @@ public class Go {
         }
         
         return false;
+    }
+    
+    // Territory is defined as empty spaces that are adjacdent with only the players stones
+    private boolean isChainPlayerTerritoy(ArrayList<Point> chain, int player) {
+        // Optimize with cache of checked neighbors
+
+        for (Point point : chain) {
+            ArrayList<Point> neighbors = getNeighbors(point.y, point.x);
+            
+            for (Point neighbor : neighbors) {
+                int value = getValue(neighbor.y, neighbor.x);
+                if (value != player && value != EMPTY) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
     
     public boolean isInBounds(int row, int column) {

@@ -54,7 +54,7 @@ public class Driver {
     }
     
     public static void main(String[] args) {
-        Go game = new Go(20);
+        Go game = new Go(19);
         
         Scanner input = new Scanner(System.in);
         
@@ -104,6 +104,9 @@ public class Driver {
 
         input.close();
         
-        System.out.println("Both players skipped! Game over!");
+        int blackScore = game.getScoreArea(Go.BLACK);
+        int whiteScore = game.getScoreArea(Go.WHITE);
+        
+        System.out.println("Both players skipped! Game over! Black got " + blackScore + " points and White got " + whiteScore + " points!");
     }
 }
