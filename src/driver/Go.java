@@ -10,17 +10,17 @@ public class Go {
     
     private final int[][] board;
     private final int size;
+    private final boolean allowSelfCapture;
     
     private boolean lastPlayerPassed = false;
     private boolean gameEnded = false;
     private int move = 1;
     private int currentPlayer = BLACK;
     
-    
-    // P2 TODO: Options: int size, boolean self capture/suicide
-    public Go(int size /*, boolean allowSelfCapture*/) {
-        board = new int[size][size];
+    public Go(int size, boolean allowSelfCapture) {
+        this.board = new int[size][size];
         this.size = size;
+        this.allowSelfCapture = allowSelfCapture;
         
         for (int row = 0; row < board.length; row++) {
             for (int column = 0; column < board[0].length; column++) {
@@ -53,30 +53,6 @@ public class Go {
         currentPlayer = getOtherPlayer(currentPlayer);
     }
     
-    public boolean canPlay(int row, int column) {
-        // P3 TODO: Check that a value was never occcupied by the same player (ko rule)
-        // P3 TODO: Check for infinite looping behavior
-
-        if (isInBounds(row, column) == false) {
-            return false;
-        }
-        
-        if (getValue(row, column) != EMPTY) {
-            return false;
-        }
-        
-        // P2 TODO: Optional self-capture rule
-        // A move is illegal if only one's stones are removed after a play
-        // Basic implementation:
-        // Get neighboring chains (getNeighborChains) including self
-        // Check that opposite chain isn't losing liberty
-        // If yes, return legal
-        // If no, continue
-        // Check chain that the placed stone resides in, no need to get neighbors for this
-        
-        return true;
-    }
-    
     // Remove a neighboring chain if it has no liberty
     private void capture(int row, int column, int player) {
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, player);
@@ -90,11 +66,50 @@ public class Go {
         }
     }
     
+    public boolean canPlay(int row, int column) {
+        // P3 TODO: Check that a value was never occcupied by the same player (ko rule)
+        // P3 TODO: Check for infinite looping behavior
+
+        if (isInBounds(row, column) == false) {
+            return false;
+        }
+        
+        if (getValue(row, column) != EMPTY) {
+            return false;
+        }
+        
+        if (allowSelfCapture == false && selfCapturePrecondition(row, column)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // A move can be illegal if only one's stones are removed after a play
+    private boolean selfCapturePrecondition(int row, int column) {
+        int otherPlayer = getOtherPlayer(currentPlayer);
+        ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, otherPlayer);
+        
+        for (ArrayList<Point> chain : neighborChains) {
+            if (isChainLiberal(chain) == false) {
+                return false;
+            }
+        }
+        
+        setValue(row, column, currentPlayer);
+        ArrayList<Point> currentChain = getChain(row, column);
+        boolean chainLiberal = isChainLiberal(currentChain) == false;
+        setValue(row, column, EMPTY);
+        
+        return chainLiberal;
+    }
+    
     /*
     Finds directly adjacent clusters of the same color
     This approach recursively searches immediate neighbors and avoids searching previously searched values
         - To improve speed, don't include checked indexes as neighbors
         - Track the angle that a given getChain call has differed from the origin
+        - P3 TODO: Look more than one ahead, no need to get forward neighbor
     */
     private ArrayList<Point> getChain(int row, int column) {
         ArrayList<Point> chain = new ArrayList();
@@ -147,7 +162,7 @@ public class Go {
         ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
         ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
         
-        if (player == this.currentPlayer) {
+        if (player == currentPlayer) {
             stonesOfInterest.add(new Point(column, row));
         }
         

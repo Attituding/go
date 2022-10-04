@@ -62,7 +62,7 @@ public class Driver {
     }
     
     public static void main(String[] args) {
-        Go game = new Go(19);
+        Go game = new Go(19, false);
         
         Scanner input = new Scanner(System.in);
         
