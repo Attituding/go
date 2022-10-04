@@ -30,7 +30,7 @@ public class Driver {
             String rowString = padString(i + 1 + "", paddingLength);
             
             for (int y = 0; y < size; y++) {
-                int rawValue = game.getStone(i, y);
+                int rawValue = game.getValue(i, y);
                 
                 switch (rawValue) {
                     case Go.EMPTY -> rowString += padString("·", paddingLength);
@@ -61,11 +61,11 @@ public class Driver {
         while (game.getGameEnded() == false) {
             print(game);
             
-            System.out.println("Do you want to skip your turn?");
+            System.out.println("Do you want to skip your turn? (n/y/true/false)");
             
             String line = input.next();
             
-            if (line.contains("y") || line.contains("true")) {
+            if (line.contains("y") || line.equals("true")) {
                 System.out.println("Skipping turn!");
                 game.pass();
                 continue;

@@ -18,13 +18,13 @@ public class Go {
     
     
     // options: int size, boolean self capture/suicide
-    public Go(int size) {
+    public Go(int size /*, boolean allowSelfCapture*/) {
         board = new int[size][size];
         this.size = size;
         
         for (int row = 0; row < board.length; row++) {
             for (int column = 0; column < board[0].length; column++) {
-                setStone(row, column, EMPTY);
+                setValue(row, column, EMPTY);
             }
         }
     }
@@ -42,7 +42,7 @@ public class Go {
     }
     
     public void play(int row, int column) {
-        setStone(row, column, player);
+        setValue(row, column, player);
         
         // Capturing other player takes priority
         capture(row, column, getOtherPlayer(player));
@@ -61,38 +61,30 @@ public class Go {
             return false;
         }
         
-        if (getStone(row, column) != EMPTY) {
+        if (getValue(row, column) != EMPTY) {
             return false;
         }
         
-        /*
-        // Optional suicide rule?
-        // Additional: a move is illegal if 3 or more of your stones will be removed
-        // Setting and removing point to test liberty as  a chain, if one exists
-        int currentValue = getStone(row, column);
-        setStone(row, column, player);
-        ArrayList<Point> chain = getChain(row, column);
-        boolean pointisLiberal = isChainLiberal(chain);
-        setStone(row, column, EMPTY);
-        */
+        // Optional self-capture rule
+        // A move is illegal if only one's stones are removed after a play
+        // Basic implementation:
+        // Get neighboring chains (getNeighborChains) including self
+        // Check that opposite chain isn't losing liberty
+        // If yes, return legal
+        // If no, continue
+        // Check chain that the placed stone resides in, no need to get neighbors for this
         
         return true;
     }
     
     // Remove a neighboring chain if it has no liberty
     private void capture(int row, int column, int player) {
-        ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
+        ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, player);
         
-        stonesOfInterest.add(new Point(column, row));
-        
-        for (Point stoneOfInterest : stonesOfInterest) {
-            if (getStone(stoneOfInterest.y, stoneOfInterest.x) == player) {
-                ArrayList<Point> chain = getChain(stoneOfInterest.y, stoneOfInterest.x);
-            
-                if (isChainLiberal(chain) == false) {
-                    for (Point point : chain) {
-                        setStone(point.y, point.x, EMPTY);
-                    }
+        for (ArrayList<Point> chain : neighborChains) {
+            if (isChainLiberal(chain) == false) {
+                for (Point point : chain) {
+                    setValue(point.y, point.x, EMPTY);
                 }
             }
         }
@@ -113,7 +105,7 @@ public class Go {
         
         chain.add(new Point(column, row));
         
-        int targetPlayer = getStone(row, column);
+        int targetPlayer = getValue(row, column);
         
         getChain(chain, row, column, targetPlayer);
         
@@ -124,7 +116,7 @@ public class Go {
         ArrayList<Point> neighbors = getNeighbors(row, column);
         
         for (Point neighbor : neighbors) {
-            if (getStone(neighbor.y, neighbor.x) == player && chain.contains(neighbor) == false) {
+            if (getValue(neighbor.y, neighbor.x) == player && chain.contains(neighbor) == false) {
                 chain.add(new Point(neighbor.x, neighbor.y));
                 getChain(chain, neighbor.y, neighbor.x, player);
             }
@@ -153,6 +145,24 @@ public class Go {
         return neighbors;
     }
     
+    private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player) {
+        // TODO: check that chains are not duplicated
+        
+        ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
+        ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
+        
+        stonesOfInterest.add(new Point(column, row));
+        
+        for (Point stoneOfInterest : stonesOfInterest) {
+            if (getValue(stoneOfInterest.y, stoneOfInterest.x) == player) {
+                ArrayList<Point> chain = getChain(stoneOfInterest.y, stoneOfInterest.x);
+                neighborChains.add(chain);
+            }
+        }
+        
+        return neighborChains;
+    }
+    
     public int getPlayer() {
         return player;
     }
@@ -174,9 +184,21 @@ public class Go {
     }
     
     /*
-    public int getScore(int player) {
-        // count territory completely surrounded by a player
-        // loop over all empty slots while retaining a list of checked indexes?
+    public int getScoreTerritoy(int player) {
+        // Wikipedia: In territory scoring a player's score is determined by the number of empty locations that player has surrounded minus the number of stones their opponent has captured
+        // loop over every empty space
+        // if a space is surrounded by "player", add point to that player
+        // if a space is surrounded by multiple players, no points are given
+        // subtract captured stone count int from that score
+    }
+    */
+    
+    /*
+    public int getScoreArea(int player) {
+        // Wikipedia: In area scoring (including Chinese rules), a player's score is determined by the number of stones that player has on the board plus the empty area surrounded by that player's stones. 
+        // loop over every empty space (also track the amount fo stone that "player" has)
+        // if a space is surrounded by "player", add point to that player
+        // if a space is surrounded by multiple players, no points are given
     }
     */
     
@@ -184,7 +206,7 @@ public class Go {
         return size;
     }
     
-    public int getStone(int row, int column) {
+    public int getValue(int row, int column) {
         return board[row][column];
     }
     
@@ -210,7 +232,7 @@ public class Go {
         ArrayList<Point> neighbors = getNeighbors(row, column);
         
         for (Point neighbor : neighbors) {
-            if (getStone(neighbor.y, neighbor.x) == EMPTY) {
+            if (getValue(neighbor.y, neighbor.x) == EMPTY) {
                 return true;
             }
         }
@@ -218,7 +240,7 @@ public class Go {
         return false;
     }
     
-    private void setStone(int row, int column, int value) {
+    private void setValue(int row, int column, int value) {
         board[row][column] = value;
     }
 }
