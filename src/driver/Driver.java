@@ -13,6 +13,14 @@ public class Driver {
         return paddedString;
     }
     
+    private static int parseInt(String integer) {
+        try {
+            return Integer.parseInt(integer);
+        } catch (NumberFormatException e) {}
+        
+        return -1;
+    }
+    
     private static void print(Go game) {
         int size = game.getSize();
         int paddingLength = Integer.toString(size).length();
@@ -71,8 +79,8 @@ public class Driver {
                 continue;
             }
             
-            int row;
-            int column;
+            int row = -1;
+            int column = -1;
             boolean firstTry = true;
             
             do {
@@ -83,19 +91,19 @@ public class Driver {
                 firstTry = false;
                 
                 System.out.println("Input a row number:");
-                row = input.nextInt() - 1;
+                row = parseInt(input.next()) - 1;
                 
                 while (game.isInBounds(row) == false) {
                     System.out.println("Invalid row. Try again:");
-                    row = input.nextInt() - 1;
+                    row = parseInt(input.next()) - 1;
                 }
                 
                 System.out.println("Input a column number:");
-                column = input.nextInt() - 1;
+                column = parseInt(input.next()) - 1;
                 
                 while (game.isInBounds(column) == false) {
                     System.out.println("Invalid column. Try again:");
-                    column = input.nextInt() - 1;
+                    column = parseInt(input.next()) - 1;
                 }
             } while (game.canPlay(row, column) == false);
             
