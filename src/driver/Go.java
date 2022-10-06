@@ -79,9 +79,6 @@ public class Go {
     }
 
     public boolean canPlay(int row, int column) {
-        // P3 TODO: Check that a value was never occcupied by the same player (ko rule)
-        // P3 TODO: Check for infinite looping behavior
-
         if (isInBounds(row, column) == false) {
             return false;
         }
@@ -97,7 +94,7 @@ public class Go {
         return true;
     }
 
-    // A move can be illegal if only one's stones are removed after a play
+    // A move is (optionally) illegal if only the current player's stone(s) are removed after a play
     private boolean preconditionSelfCapture(int row, int column) {
         int otherPlayer = getOtherPlayer(currentPlayer);
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, otherPlayer);
@@ -283,8 +280,6 @@ public class Go {
 
     // Territory is defined as empty spaces that are adjacdent with only the players stones
     private boolean isChainPlayerTerritoy(ArrayList<Point> chain, int player) {
-        // Optimize with cache of checked neighbors
-
         for (Point point : chain) {
             ArrayList<Point> neighbors = getNeighbors(point.y, point.x);
 

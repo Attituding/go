@@ -56,6 +56,15 @@ public class Driver {
     }
 
     public static void main(String[] args) {
+        System.out.println(
+                "   ____         \n"
+                + "  / ___|   ___  \n"
+                + " | |  _   / _ \\ \n"
+                + " | |_| | | (_) |\n"
+                + "  \\____|  \\___/ \n"
+                + "                "
+        );
+
         Go game = new Go(19, false);
 
         Scanner input = new Scanner(System.in);
