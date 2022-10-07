@@ -15,9 +15,9 @@ public class Go
     private final boolean allowSelfCapture;
 
     private boolean lastPlayerPassed = false;
-    private boolean gameEnded = false;
-    private int move = 1;
+    private boolean bothPlayersPassed = false;
     private int currentPlayer = BLACK;
+    private int move = 1;
     private int stonesCapturedByBlack = 0;
     private int stonesCapturedByWhite = 0;
 
@@ -41,7 +41,7 @@ public class Go
         // When both players pass consecutively, end the game
         if (lastPlayerPassed)
         {
-            gameEnded = true;
+            bothPlayersPassed = true;
             return;
         }
 
@@ -124,6 +124,7 @@ public class Go
         {
             if (isChainLiberal(chain) == false)
             {
+                setValue(row, column, EMPTY);
                 return false;
             }
         }
@@ -132,7 +133,6 @@ public class Go
         boolean chainLiberal = isChainLiberal(currentChain) == false;
         
         setValue(row, column, EMPTY);
-
         return chainLiberal;
     }
 
@@ -169,6 +169,7 @@ public class Go
         }
     }
 
+    // P2: Override to select specific neighbors
     private ArrayList<Point> getNeighbors(int row, int column)
     {
         ArrayList<Point> neighbors = new ArrayList();
@@ -225,11 +226,6 @@ public class Go
         return currentPlayer;
     }
 
-    public boolean getGameEnded()
-    {
-        return gameEnded;
-    }
-
     public int getMove()
     {
         return move;
@@ -255,9 +251,9 @@ public class Go
     {
         int stones = 0;
 
-        for (int y = 0; y < board.length; y++)
+        for (int y = 0; y < size; y++)
         {
-            for (int x = 0; x < board[0].length; x++)
+            for (int x = 0; x < size; x++)
             {
                 int value = getValue(y, x);
 
@@ -286,9 +282,9 @@ public class Go
         ArrayList<Point> checkedPoints = new ArrayList();
         int territory = 0;
 
-        for (int y = 0; y < board.length; y++)
+        for (int y = 0; y < size; y++)
         {
-            for (int x = 0; x < board[0].length; x++)
+            for (int x = 0; x < size; x++)
             {
                 int value = getValue(y, x);
 
@@ -352,6 +348,24 @@ public class Go
             }
         }
 
+        return true;
+    }
+    
+    public boolean isGameOver() {
+        if (bothPlayersPassed) {
+            return true;
+        }
+        
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                if (canPlay(y, x) == true) {
+                    return false;
+                }
+            }
+        }
+        
         return true;
     }
 

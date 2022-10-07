@@ -83,7 +83,7 @@ public class Driver
 
         Scanner input = new Scanner(System.in);
 
-        while (game.getGameEnded() == false)
+        while (game.isGameOver() == false)
         {
             print(game);
 
