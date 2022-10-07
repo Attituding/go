@@ -114,6 +114,9 @@ public class Go
     // A move is (optionally) illegal if only the current player's stone(s) are removed after a play
     private boolean preconditionSelfCapture(int row, int column)
     {
+        // Temporarily set value to simulate a play
+        setValue(row, column, currentPlayer);
+        
         int otherPlayer = getOtherPlayer(currentPlayer);
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, otherPlayer);
 
@@ -124,11 +127,10 @@ public class Go
                 return false;
             }
         }
-
-        // Temporarily set value to simulate a play
-        setValue(row, column, currentPlayer);
+        
         ArrayList<Point> currentChain = getChain(row, column);
         boolean chainLiberal = isChainLiberal(currentChain) == false;
+        
         setValue(row, column, EMPTY);
 
         return chainLiberal;
@@ -270,7 +272,7 @@ public class Go
     }
 
     // Territory scoring counts a player's territory minus the stones captured by the opponent
-    public int getScoreTerritoy(int player)
+    public int getScoreTerritory(int player)
     {
         int stonesCaptured = player == BLACK
                 ? stonesCapturedByWhite
