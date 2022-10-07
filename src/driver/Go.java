@@ -3,7 +3,8 @@ package driver;
 import java.util.ArrayList;
 import java.awt.Point;
 
-public class Go {
+public class Go
+{
 
     public static final int EMPTY = 0;
     public static final int BLACK = 1;
@@ -20,21 +21,26 @@ public class Go {
     private int stonesCapturedByBlack = 0;
     private int stonesCapturedByWhite = 0;
 
-    public Go(int size, boolean allowSelfCapture) {
+    public Go(int size, boolean allowSelfCapture)
+    {
         this.board = new int[size][size];
         this.size = size;
         this.allowSelfCapture = allowSelfCapture;
 
-        for (int row = 0; row < board.length; row++) {
-            for (int column = 0; column < board[0].length; column++) {
+        for (int row = 0; row < board.length; row++)
+        {
+            for (int column = 0; column < board[0].length; column++)
+            {
                 setValue(row, column, EMPTY);
             }
         }
     }
 
-    public void pass() {
+    public void pass()
+    {
         // When both players pass consecutively, end the game
-        if (lastPlayerPassed) {
+        if (lastPlayerPassed)
+        {
             gameEnded = true;
             return;
         }
@@ -44,7 +50,8 @@ public class Go {
         currentPlayer = getOtherPlayer(currentPlayer);
     }
 
-    public void play(int row, int column) {
+    public void play(int row, int column)
+    {
         setValue(row, column, currentPlayer);
 
         // Capturing opponent takes priority
@@ -57,37 +64,47 @@ public class Go {
     }
 
     // Remove a neighboring chain if it has no liberty
-    private void capture(int row, int column, int player) {
+    private void capture(int row, int column, int player)
+    {
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, player);
 
         int captured = 0;
 
-        for (ArrayList<Point> chain : neighborChains) {
-            if (isChainLiberal(chain) == false) {
-                for (Point point : chain) {
+        for (ArrayList<Point> chain : neighborChains)
+        {
+            if (isChainLiberal(chain) == false)
+            {
+                for (Point point : chain)
+                {
                     setValue(point.y, point.x, EMPTY);
                     captured++;
                 }
             }
         }
 
-        if (player == WHITE && currentPlayer == BLACK) {
+        if (player == WHITE && currentPlayer == BLACK)
+        {
             stonesCapturedByBlack += captured;
-        } else if (player == BLACK && currentPlayer == WHITE) {
+        } else if (player == BLACK && currentPlayer == WHITE)
+        {
             stonesCapturedByWhite += captured;
         }
     }
 
-    public boolean canPlay(int row, int column) {
-        if (isInBounds(row, column) == false) {
+    public boolean canPlay(int row, int column)
+    {
+        if (isInBounds(row, column) == false)
+        {
             return false;
         }
 
-        if (getValue(row, column) != EMPTY) {
+        if (getValue(row, column) != EMPTY)
+        {
             return false;
         }
 
-        if (allowSelfCapture == false && preconditionSelfCapture(row, column)) {
+        if (allowSelfCapture == false && preconditionSelfCapture(row, column))
+        {
             return false;
         }
 
@@ -95,16 +112,20 @@ public class Go {
     }
 
     // A move is (optionally) illegal if only the current player's stone(s) are removed after a play
-    private boolean preconditionSelfCapture(int row, int column) {
+    private boolean preconditionSelfCapture(int row, int column)
+    {
         int otherPlayer = getOtherPlayer(currentPlayer);
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, otherPlayer);
 
-        for (ArrayList<Point> chain : neighborChains) {
-            if (isChainLiberal(chain) == false) {
+        for (ArrayList<Point> chain : neighborChains)
+        {
+            if (isChainLiberal(chain) == false)
+            {
                 return false;
             }
         }
 
+        // Temporarily set value to simulate a play
         setValue(row, column, currentPlayer);
         ArrayList<Point> currentChain = getChain(row, column);
         boolean chainLiberal = isChainLiberal(currentChain) == false;
@@ -120,7 +141,8 @@ public class Go {
         - Track the angle that a given getChain call has differed from the origin
         - P3 TODO: Look more than one ahead, no need to get forward neighbor
      */
-    private ArrayList<Point> getChain(int row, int column) {
+    private ArrayList<Point> getChain(int row, int column)
+    {
         ArrayList<Point> chain = new ArrayList();
         int targetPlayer = getValue(row, column);
 
@@ -131,51 +153,63 @@ public class Go {
         return chain;
     }
 
-    private void getChain(ArrayList<Point> chain, int row, int column, int player) {
+    private void getChain(ArrayList<Point> chain, int row, int column, int player)
+    {
         ArrayList<Point> neighbors = getNeighbors(row, column);
 
-        for (Point neighbor : neighbors) {
-            if (getValue(neighbor.y, neighbor.x) == player && chain.contains(neighbor) == false) {
+        for (Point neighbor : neighbors)
+        {
+            if (getValue(neighbor.y, neighbor.x) == player && chain.contains(neighbor) == false)
+            {
                 chain.add(new Point(neighbor.x, neighbor.y));
                 getChain(chain, neighbor.y, neighbor.x, player);
             }
         }
     }
 
-    private ArrayList<Point> getNeighbors(int row, int column) {
+    private ArrayList<Point> getNeighbors(int row, int column)
+    {
         ArrayList<Point> neighbors = new ArrayList();
 
-        if (isInBounds(row - 1, column)) { // North
+        if (isInBounds(row - 1, column)) // North
+        {
             neighbors.add(new Point(column, row - 1));
         }
 
-        if (isInBounds(row, column + 1)) { // East
+        if (isInBounds(row, column + 1)) // East
+        {
             neighbors.add(new Point(column + 1, row));
         }
 
-        if (isInBounds(row + 1, column)) { // South
+        if (isInBounds(row + 1, column)) // South
+        {
             neighbors.add(new Point(column, row + 1));
         }
 
-        if (isInBounds(row, column - 1)) { //West
+        if (isInBounds(row, column - 1)) //West
+        {
             neighbors.add(new Point(column - 1, row));
         }
 
         return neighbors;
     }
 
-    private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player) {
+    private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player)
+    {
         // P3 TODO: check that chains are not duplicated
 
         ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
         ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
 
-        if (player == currentPlayer) {
+        if (player == currentPlayer)
+        {
             stonesOfInterest.add(new Point(column, row));
         }
 
-        for (Point stoneOfInterest : stonesOfInterest) {
-            if (getValue(stoneOfInterest.y, stoneOfInterest.x) == player) {
+        for (Point stoneOfInterest : stonesOfInterest)
+        {
+            if (getValue(stoneOfInterest.y, stoneOfInterest.x) == player)
+            {
                 ArrayList<Point> chain = getChain(stoneOfInterest.y, stoneOfInterest.x);
                 neighborChains.add(chain);
             }
@@ -184,39 +218,49 @@ public class Go {
         return neighborChains;
     }
 
-    public int getPlayer() {
+    public int getCurrentPlayer()
+    {
         return currentPlayer;
     }
 
-    public boolean getGameEnded() {
+    public boolean getGameEnded()
+    {
         return gameEnded;
     }
 
-    public int getMove() {
+    public int getMove()
+    {
         return move;
     }
 
-    public int getOtherPlayer(int player) {
-        if (player == BLACK) {
+    public int getOtherPlayer(int player)
+    {
+        if (player == BLACK)
+        {
             return WHITE;
         }
 
         return BLACK;
     }
 
-    public int getSize() {
+    public int getSize()
+    {
         return size;
     }
 
-    // Area scoring counts a player's territoty plus the number of stone they have
-    public int getScoreArea(int player) {
+    // Area scoring counts a player's territoty plus the number of stones they have on the board
+    public int getScoreArea(int player)
+    {
         int stones = 0;
 
-        for (int y = 0; y < board.length; y++) {
-            for (int x = 0; x < board[0].length; x++) {
+        for (int y = 0; y < board.length; y++)
+        {
+            for (int x = 0; x < board[0].length; x++)
+            {
                 int value = getValue(y, x);
 
-                if (value == player) {
+                if (value == player)
+                {
                     stones++;
                 }
             }
@@ -226,7 +270,8 @@ public class Go {
     }
 
     // Territory scoring counts a player's territory minus the stones captured by the opponent
-    public int getScoreTerritoy(int player) {
+    public int getScoreTerritoy(int player)
+    {
         int stonesCaptured = player == BLACK
                 ? stonesCapturedByWhite
                 : stonesCapturedByBlack;
@@ -234,28 +279,34 @@ public class Go {
         return getTerritory(player) - stonesCaptured;
     }
 
-    public int getTerritory(int player) {
+    public int getTerritory(int player)
+    {
         ArrayList<Point> checkedPoints = new ArrayList();
         int territory = 0;
 
-        for (int y = 0; y < board.length; y++) {
-            for (int x = 0; x < board[0].length; x++) {
+        for (int y = 0; y < board.length; y++)
+        {
+            for (int x = 0; x < board[0].length; x++)
+            {
                 int value = getValue(y, x);
 
-                if (value != EMPTY) {
+                if (value != EMPTY)
+                {
                     continue;
                 }
 
-                if (checkedPoints.contains(new Point(y, x))) {
+                if (checkedPoints.contains(new Point(x, y)))
+                {
                     continue;
                 }
 
                 ArrayList<Point> chain = getChain(y, x);
                 checkedPoints.addAll(chain);
 
-                // If a space is surrounded by "player", it belongs to ""player
-                // If a space is surrounded by both players, it belongs to neither
-                if (isChainPlayerTerritoy(chain, player)) {
+                // If a space is surrounded by "player", it belongs to "player"
+                // If a space is surrounded by both players, it belongs to no one
+                if (isChainPlayerTerritoy(chain, player))
+                {
                     territory += chain.size();
                 }
             }
@@ -264,13 +315,17 @@ public class Go {
         return territory;
     }
 
-    public int getValue(int row, int column) {
+    public int getValue(int row, int column)
+    {
         return board[row][column];
     }
 
-    private boolean isChainLiberal(ArrayList<Point> chain) {
-        for (Point point : chain) {
-            if (isLiberal(point.y, point.x)) {
+    private boolean isChainLiberal(ArrayList<Point> chain)
+    {
+        for (Point point : chain)
+        {
+            if (isLiberal(point.y, point.x))
+            {
                 return true;
             }
         }
@@ -279,13 +334,17 @@ public class Go {
     }
 
     // Territory is defined as empty spaces that are adjacdent with only the players stones
-    private boolean isChainPlayerTerritoy(ArrayList<Point> chain, int player) {
-        for (Point point : chain) {
+    private boolean isChainPlayerTerritoy(ArrayList<Point> chain, int player)
+    {
+        for (Point point : chain)
+        {
             ArrayList<Point> neighbors = getNeighbors(point.y, point.x);
 
-            for (Point neighbor : neighbors) {
+            for (Point neighbor : neighbors)
+            {
                 int value = getValue(neighbor.y, neighbor.x);
-                if (value != player && value != EMPTY) {
+                if (value != player && value != EMPTY)
+                {
                     return false;
                 }
             }
@@ -294,19 +353,24 @@ public class Go {
         return true;
     }
 
-    public boolean isInBounds(int row, int column) {
+    public boolean isInBounds(int row, int column)
+    {
         return isInBounds(row) && isInBounds(column);
     }
 
-    public boolean isInBounds(int axis) {
+    public boolean isInBounds(int axis)
+    {
         return axis >= 0 && axis < size;
     }
 
-    private boolean isLiberal(int row, int column) {
+    private boolean isLiberal(int row, int column)
+    {
         ArrayList<Point> neighbors = getNeighbors(row, column);
 
-        for (Point neighbor : neighbors) {
-            if (getValue(neighbor.y, neighbor.x) == EMPTY) {
+        for (Point neighbor : neighbors)
+        {
+            if (getValue(neighbor.y, neighbor.x) == EMPTY)
+            {
                 return true;
             }
         }
@@ -314,7 +378,8 @@ public class Go {
         return false;
     }
 
-    private void setValue(int row, int column, int value) {
+    private void setValue(int row, int column, int value)
+    {
         board[row][column] = value;
     }
 }

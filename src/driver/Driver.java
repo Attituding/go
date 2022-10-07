@@ -2,51 +2,64 @@ package driver;
 
 import java.util.Scanner;
 
-public class Driver {
+public class Driver
+{
 
-    private static String padString(String string, int paddingLength) {
+    private static String padString(String string, int paddingLength)
+    {
         String paddedString = string;
 
-        for (int i = string.length(); i < paddingLength + 1; i++) {
+        for (int i = string.length(); i < paddingLength + 1; i++)
+        {
             paddedString += " ";
         }
 
         return paddedString;
     }
 
-    private static int parseInt(String integer) {
-        try {
+    private static int parseInt(String integer)
+    {
+        try
+        {
             return Integer.parseInt(integer);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e)
+        {
         }
 
         return -1;
     }
 
-    private static void print(Go game) {
+    private static void print(Go game)
+    {
         int size = game.getSize();
         int paddingLength = Integer.toString(size).length();
 
         String header = padString("0", paddingLength);
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
+        {
             header += padString(i + 1 + " ", paddingLength);
         }
 
-        System.out.println("Player " + game.getPlayer() + " - Move " + game.getMove());
+        System.out.println("Player " + game.getCurrentPlayer() + " - Move " + game.getMove());
         System.out.println(header);
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++)
+        {
             String rowString = padString(i + 1 + "", paddingLength);
 
-            for (int y = 0; y < size; y++) {
+            for (int y = 0; y < size; y++)
+            {
                 int rawValue = game.getValue(i, y);
 
-                if (rawValue == Go.EMPTY) {
+                if (rawValue == Go.EMPTY)
+                {
                     rowString += padString("·", paddingLength);
-                } else if (rawValue == Go.BLACK) {
+                } else if (rawValue == Go.BLACK)
+                {
                     rowString += padString("B", paddingLength);
-                } else if (rawValue == Go.WHITE) {
+                } else if (rawValue == Go.WHITE)
+                {
                     rowString += padString("W", paddingLength);
                 }
             }
@@ -55,7 +68,8 @@ public class Driver {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         System.out.println(
                 "   ____         \n"
                 + "  / ___|   ___  \n"
@@ -69,14 +83,16 @@ public class Driver {
 
         Scanner input = new Scanner(System.in);
 
-        while (game.getGameEnded() == false) {
+        while (game.getGameEnded() == false)
+        {
             print(game);
 
             System.out.println("Do you want to skip your turn? (n/y/true/false)");
 
             String line = input.next();
 
-            if (line.contains("y") || line.equals("true")) {
+            if (line.contains("y") || line.equals("true"))
+            {
                 System.out.println("Skipping turn!");
                 game.pass();
                 continue;
@@ -86,8 +102,10 @@ public class Driver {
             int column = -1;
             boolean firstTry = true;
 
-            do {
-                if (firstTry == false) {
+            do
+            {
+                if (firstTry == false)
+                {
                     System.out.println("Illegal move. Try again.");
                 }
 
@@ -96,7 +114,8 @@ public class Driver {
                 System.out.println("Input a row number:");
                 row = parseInt(input.next()) - 1;
 
-                while (game.isInBounds(row) == false) {
+                while (game.isInBounds(row) == false)
+                {
                     System.out.println("Invalid row. Try again:");
                     row = parseInt(input.next()) - 1;
                 }
@@ -104,7 +123,8 @@ public class Driver {
                 System.out.println("Input a column number:");
                 column = parseInt(input.next()) - 1;
 
-                while (game.isInBounds(column) == false) {
+                while (game.isInBounds(column) == false)
+                {
                     System.out.println("Invalid column. Try again:");
                     column = parseInt(input.next()) - 1;
                 }
