@@ -116,7 +116,7 @@ public class Go
     {
         // Temporarily set value to simulate a play
         setValue(row, column, currentPlayer);
-        
+
         int otherPlayer = getOtherPlayer(currentPlayer);
         ArrayList<ArrayList<Point>> neighborChains = getNeighborChains(row, column, otherPlayer);
 
@@ -128,20 +128,17 @@ public class Go
                 return false;
             }
         }
-        
+
         ArrayList<Point> currentChain = getChain(row, column);
         boolean chainLiberal = isChainLiberal(currentChain) == false;
-        
+
         setValue(row, column, EMPTY);
         return chainLiberal;
     }
 
     /*
-    Finds directly adjacent clusters of the same color
-    This approach recursively searches immediate neighbors and avoids searching previously searched values
-        - To improve speed, don't include checked indexes as neighbors
-        - Track the angle that a given getChain call has differed from the origin
-        - P3 TODO: Look more than one ahead, no need to get forward neighbor
+    Finds clusters of the same colour
+    This approach recursively searches immediate neighbors while avoiding known points
      */
     private ArrayList<Point> getChain(int row, int column)
     {
@@ -169,7 +166,6 @@ public class Go
         }
     }
 
-    // P2: Override to select specific neighbors
     private ArrayList<Point> getNeighbors(int row, int column)
     {
         ArrayList<Point> neighbors = new ArrayList();
@@ -199,8 +195,6 @@ public class Go
 
     private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player)
     {
-        // P3 TODO: check that chains are not duplicated
-
         ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
         ArrayList<Point> stonesOfInterest = getNeighbors(row, column);
 
@@ -350,22 +344,25 @@ public class Go
 
         return true;
     }
-    
-    public boolean isGameOver() {
-        if (bothPlayersPassed) {
+
+    public boolean isGameOver()
+    {
+        if (bothPlayersPassed)
+        {
             return true;
         }
-        
+
         for (int y = 0; y < size; y++)
         {
             for (int x = 0; x < size; x++)
             {
-                if (canPlay(y, x) == true) {
+                if (canPlay(y, x) == true)
+                {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -379,6 +376,7 @@ public class Go
         return axis >= 0 && axis < size;
     }
 
+    // Returns true when a point has an empty space on any side
     private boolean isLiberal(int row, int column)
     {
         ArrayList<Point> neighbors = getNeighbors(row, column);
