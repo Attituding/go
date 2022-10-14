@@ -138,8 +138,8 @@ public class Driver
         int blackScoreArea = game.getScoreArea(Go.BLACK);
         int whiteScoreArea = game.getScoreArea(Go.WHITE);
 
-        int blackScoreTerritory = game.getScoreTerritoy(Go.BLACK);
-        int whiteScoreTerritory = game.getScoreTerritoy(Go.WHITE);
+        int blackScoreTerritory = game.getScoreTerritory(Go.BLACK);
+        int whiteScoreTerritory = game.getScoreTerritory(Go.WHITE);
 
         System.out.println("Both players skipped! Game over!");
         System.out.println("Area Scoring: Black got " + blackScoreArea + " points and White got " + whiteScoreArea + " points!");
