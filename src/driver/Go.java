@@ -139,6 +139,7 @@ public class Go
     /*
     Finds clusters of the same colour
     This approach recursively searches immediate neighbors while avoiding known points
+    Pretty unoptimized, but works for now
      */
     private ArrayList<Point> getChain(int row, int column)
     {
@@ -166,6 +167,7 @@ public class Go
         }
     }
 
+    // Could add overload for specific neighbors for efficiency
     private ArrayList<Point> getNeighbors(int row, int column)
     {
         ArrayList<Point> neighbors = new ArrayList();
@@ -193,6 +195,7 @@ public class Go
         return neighbors;
     }
 
+    // Adding filtering for duplicate chains would be good
     private ArrayList<ArrayList<Point>> getNeighborChains(int row, int column, int player)
     {
         ArrayList<ArrayList<Point>> neighborChains = new ArrayList();
@@ -376,7 +379,7 @@ public class Go
         return axis >= 0 && axis < size;
     }
 
-    // Returns true when a point has an empty space on any side
+    // Returns true when a point has one or more empty space on any side
     private boolean isLiberal(int row, int column)
     {
         ArrayList<Point> neighbors = getNeighbors(row, column);
